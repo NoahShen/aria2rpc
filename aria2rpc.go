@@ -10,13 +10,16 @@ import (
 
 var RpcUrl = "http://127.0.0.1:6800/jsonrpc"
 var RpcVersion = "2.0"
+var RpcSecret = ""
 
 func AddUri(uri string, params map[string]interface{}) (string, error) {
 	method := "aria2.addUri"
-	paramArr := make([]interface{}, 1)
 	uris := make([]string, 1)
 	uris[0] = uri
-	paramArr[0] = uris
+
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = uris
 	if params != nil {
 		paramArr = append(paramArr, params)
 	}
@@ -43,8 +46,9 @@ func AddTorrent(path string) (string, error) {
 	encoded := coder.EncodeToString(fileBytes)
 
 	method := "aria2.addTorrent"
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = encoded
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = encoded
 	var replyGID string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &replyGID)
 	if err != nil {
@@ -60,8 +64,9 @@ func Remove(gid string, force bool) (string, error) {
 	} else {
 		method = "aria2.remove"
 	}
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	var replyGID string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &replyGID)
 	if err != nil {
@@ -77,8 +82,9 @@ func Pause(gid string, force bool) (string, error) {
 	} else {
 		method = "aria2.pause"
 	}
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	var replyGID string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &replyGID)
 	if err != nil {
@@ -89,7 +95,8 @@ func Pause(gid string, force bool) (string, error) {
 
 func PauseAll() (string, error) {
 	method := "aria2.pauseAll"
-	paramArr := make([]string, 0)
+	paramArr := make([]string, 1)
+	paramArr[0] = "token:" + RpcSecret
 	var reply string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &reply)
 	if err != nil {
@@ -100,8 +107,9 @@ func PauseAll() (string, error) {
 
 func Unpause(gid string) (string, error) {
 	method := "aria2.unpause"
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	var replyGID string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &replyGID)
 	if err != nil {
@@ -112,7 +120,8 @@ func Unpause(gid string) (string, error) {
 
 func UnpauseAll() (string, error) {
 	method := "aria2.unpauseAll"
-	paramArr := make([]string, 0)
+	paramArr := make([]string, 1)
+	paramArr[0] = "token:" + RpcSecret
 	var reply string
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &reply)
 	if err != nil {
@@ -123,8 +132,9 @@ func UnpauseAll() (string, error) {
 
 func GetStatus(gid string, keys []string) (map[string]interface{}, error) {
 	method := "aria2.tellStatus"
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	if keys != nil && len(keys) > 0 {
 		paramArr = append(paramArr, keys)
 	}
@@ -138,7 +148,8 @@ func GetStatus(gid string, keys []string) (map[string]interface{}, error) {
 
 func GetActive(keys []string) ([]map[string]interface{}, error) {
 	method := "aria2.tellActive"
-	paramArr := make([]interface{}, 0)
+	paramArr := make([]interface{}, 1)
+	paramArr[0] = "token:" + RpcSecret
 	if keys != nil && len(keys) > 0 {
 		paramArr = append(paramArr, keys)
 	}
@@ -152,9 +163,10 @@ func GetActive(keys []string) ([]map[string]interface{}, error) {
 
 func GetWaiting(offset, num int, keys []string) ([]map[string]interface{}, error) {
 	method := "aria2.tellWaiting"
-	paramArr := make([]interface{}, 2)
-	paramArr[0] = offset
-	paramArr[1] = num
+	paramArr := make([]interface{}, 3)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = offset
+	paramArr[2] = num
 	if keys != nil && len(keys) > 0 {
 		paramArr = append(paramArr, keys)
 	}
@@ -168,9 +180,10 @@ func GetWaiting(offset, num int, keys []string) ([]map[string]interface{}, error
 
 func GetStopped(offset, num int, keys []string) ([]map[string]interface{}, error) {
 	method := "aria2.tellStopped"
-	paramArr := make([]interface{}, 2)
-	paramArr[0] = offset
-	paramArr[1] = num
+	paramArr := make([]interface{}, 3)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = offset
+	paramArr[2] = num
 	if keys != nil && len(keys) > 0 {
 		paramArr = append(paramArr, keys)
 	}
@@ -184,8 +197,9 @@ func GetStopped(offset, num int, keys []string) ([]map[string]interface{}, error
 
 func GetOption(gid string) (map[string]interface{}, error) {
 	method := "aria2.getOption"
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	var reply = make(map[string]interface{})
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &reply)
 	if err != nil {
@@ -196,8 +210,9 @@ func GetOption(gid string) (map[string]interface{}, error) {
 
 func ChangeOption(gid string, params map[string]string) (string, error) {
 	method := "aria2.changeOption"
-	paramArr := make([]interface{}, 1)
-	paramArr[0] = gid
+	paramArr := make([]interface{}, 2)
+	paramArr[0] = "token:" + RpcSecret
+	paramArr[1] = gid
 	paramArr = append(paramArr, params)
 
 	var reply string
@@ -210,7 +225,8 @@ func ChangeOption(gid string, params map[string]string) (string, error) {
 
 func GetGlobalOption() (map[string]interface{}, error) {
 	method := "aria2.getGlobalOption"
-	paramArr := make([]interface{}, 0)
+	paramArr := make([]interface{}, 1)
+	paramArr[0] = "token:" + RpcSecret
 	var reply = make(map[string]interface{})
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &reply)
 	if err != nil {
@@ -221,7 +237,8 @@ func GetGlobalOption() (map[string]interface{}, error) {
 
 func ChangeGlobalOption(params map[string]string) (string, error) {
 	method := "aria2.changeGlobalOption"
-	paramArr := make([]interface{}, 0)
+	paramArr := make([]interface{}, 1)
+	paramArr[0] = "token:" + RpcSecret
 	paramArr = append(paramArr, params)
 
 	var reply string
@@ -234,7 +251,8 @@ func ChangeGlobalOption(params map[string]string) (string, error) {
 
 func GetGlobalStat() (map[string]interface{}, error) {
 	method := "aria2.getGlobalStat"
-	paramArr := make([]interface{}, 0)
+	paramArr := make([]interface{}, 1)
+	paramArr[0] = "token:" + RpcSecret
 	var reply = make(map[string]interface{})
 	err := httprpc.CallJson(RpcVersion, RpcUrl, method, paramArr, &reply)
 	if err != nil {
